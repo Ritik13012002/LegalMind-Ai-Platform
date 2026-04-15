@@ -9,3 +9,5 @@ PyMuPDF
 requests
 python-dotenv
 langchain-groq
+langchain-text-splitters
+langchain-community
