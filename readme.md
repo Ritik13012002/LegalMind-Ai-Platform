@@ -27,6 +27,7 @@ The application runs on a modern **Microservices** architecture:
    - Python + FastAPI + LangChain + Groq LLM + Pinecone
    - Handles text chunking, embedding generation, vector similarity search, and structured JSON generation.
 
+
 ## ⚙️ How to Run Locally
 
 ### 1. Start AI Engine (Port 8000)
@@ -36,13 +37,13 @@ python -m venv .venv
 # Activate venv (.venv\Scripts\activate)
 pip install -r requirements.txt
 python -m uvicorn main:app --reload
-
+```
 ### 2. Start API Gateway(Port 5000)
 ```bash 
 cd api-gateway
 npm install
 npm run dev
-
+```
 ### 3. Start Frontend(Port 5173/5174)
 ```bash
 cd froentend
