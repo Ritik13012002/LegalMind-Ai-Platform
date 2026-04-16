@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, FileText, Clock, Bot, User, Sparkles } from 'lucide-react';
+import { Send, FileText, Clock, Bot, User, Sparkles,Mic , MicOff } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { queryAPI, documentsAPI } from '../api/axios';
 import './Chat.css';
 
 export default function ChatPage() {
+  const [isListening, setIsListening] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState('');
   const [documents, setDocuments] = useState([]); // 🔥 API documents aayenge yaha
   const [messages, setMessages] = useState([
@@ -38,6 +39,41 @@ export default function ChatPage() {
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+    const handleVoiceInput = () => {
+    // Check agar browser support karta hai
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Tumhara browser speech recognition support nahi karta, please Chrome use karo.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-IN"; // English (India) ke accent ko ache se smjhega
+    recognition.interimResults = false; 
+
+    // Jab mic on ho...
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    // Jab tu bolna band karde aur result aaye...
+    recognition.onresult = (event) => {
+      // Jo bola wo Text ban gaya!
+      const current = event.resultIndex;
+      const transcript = event.results[current][0].transcript;
+      
+      // Jo bhi pehle se search bar me likha hai, uske aage voice ka text jod do
+      setInput((prev) => prev + " " + transcript);
+    };
+
+    // Jab mic automatically band ho jaye...
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognition.start();
+  };
 
   const handleSend = async () => {
     if (!input.trim() || loading || !selectedDoc) return;
@@ -126,16 +162,37 @@ export default function ChatPage() {
             <div ref={chatEndRef} />
           </div>
 
-          <div className="chat-input-bar glass">
+                   <div className="chat-input-bar glass">
             <input
               type="text"
               className="chat-input"
-              placeholder={documents.length > 0 ? "Ask about your document..." : "Upload a document first..."}
+              placeholder={documents.length > 0 ? "Ask or speak about your document..." : "Upload a document first..."}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
               disabled={documents.length === 0}
             />
+            
+            {/* 👇 YAHAN BAACHO-BEECH MIC BUTTON LAGA DIYA 👇 */}
+            <button 
+              type="button" 
+              onClick={handleVoiceInput} 
+              style={{ 
+                background: isListening ? '#ff4757' : 'transparent', 
+                color: isListening ? 'white' : 'var(--text-secondary)', 
+                border: 'none', 
+                padding: '10px', 
+                borderRadius: '50%',
+                marginRight: '10px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              disabled={documents.length === 0}
+            >
+              {isListening ? <MicOff size={22} /> : <Mic size={22} />}
+            </button>
+            {/* 👆 MIC BUTTON KHATAM 👆 */}
+
             <button className="gradient-btn send-btn" onClick={handleSend} disabled={loading || documents.length === 0}>
               <Send size={18} />
             </button>
