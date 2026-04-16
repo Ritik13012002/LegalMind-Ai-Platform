@@ -27,16 +27,16 @@ export default function SettingsPage() {
     }
   }, [darkMode]);
 
-  const [profile, setProfile] = useState({
-    name: 'Ritik Singh',
-    email: 'ritik@example.com',
+   const [profile, setProfile] = useState({
+    name: localStorage.getItem('legalmind_name') || 'User',
+    email: localStorage.getItem('legalmind_email') || 'user@example.com',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
-
+  const initials = profile.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
   const usageStats = {
-    queriesUsed: Math.floor(totalDocs * 5) + 3,
+    queriesUsed: totalDocs > 0 ? Math.floor(totalDocs * 5) + 3 : 0,
     queriesLimit: 500,
     documentsAnalyzed: totalDocs,
     reportsGenerated: totalDocs,
@@ -65,7 +65,7 @@ export default function SettingsPage() {
             <form onSubmit={handleSave} className="settings-form">
               <div className="settings-avatar-row">
                 <div className="settings-avatar">
-                  <span>RS</span>
+                  <span>{initials}</span>
                 </div>
                 <button type="button" className="outline-btn" style={{ fontSize: '0.8rem', padding: '8px 16px' }}>
                   Change Avatar

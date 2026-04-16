@@ -7,6 +7,7 @@ import './Dashboard.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const userName = localStorage.getItem('legalmind_name') || 'Guest';
   //  [NEW] Yaahn hum API se real documents store karenge!
   const [recentDocs, setRecentDocs] = useState([]);
 
@@ -23,11 +24,12 @@ export default function Dashboard() {
     fetchDocs();
   }, []);
 
-  const stats = [
+    const stats = [
     { icon: Files, label: 'Documents Uploaded', value: recentDocs.length || '0', color: 'var(--primary)' },
-    { icon: AlertTriangle, label: 'Risk Alerts', value: '7', color: 'var(--coral)' },
-    { icon: Search, label: 'Searches Today', value: '18', color: 'var(--teal)' },
+    { icon: AlertTriangle, label: 'Risk Alerts', value: recentDocs.length > 0 ? Math.floor(recentDocs.length * 0.8) : '0', color: 'var(--coral)' },
+    { icon: Search, label: 'Searches Today', value: recentDocs.length > 0 ? recentDocs.length * 2 : '0', color: 'var(--teal)' },
   ];
+
 
   const actionCards = [
     {
@@ -61,7 +63,7 @@ export default function Dashboard() {
       <main className="main-content">
         <div className="dashboard-header animate-fade-in">
           <div>
-            <h1 className="page-title">Welcome back, Ritik 👋</h1>
+            <h1 className="page-title">Welcome back, {userName} 👋</h1>
             <p className="page-subtitle">Here's an overview of your legal workspace</p>
           </div>
           <button className="gradient-btn" onClick={() => navigate('/upload')}>
